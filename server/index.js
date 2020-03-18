@@ -25,12 +25,39 @@ io.on("connection", socket => {
       user: "admin",
       text: `${user.name}, welcome to the game ${user.game}`
     });
+    socket.broadcast
+      .to(user.game)
+      .emit("message", { user: "admin", text: `${user.name} has joined` });
 
     socket.join(user.game);
+
+    io.to(user.game).emit("gameData", {
+      game: user.game,
+      users: getUsersInGame(user.game)
+    });
+  });
+
+  socket.on("sendMessage", (message, callback) => {
+    const user = getUser(socket.id);
+
+    io.to(user.game).emit("message", { user: user.name, text: message });
+    io.to(user.game).emit("roomData", {
+      game: user.game,
+      users: getUsersInGame(user.game)
+    });
+
+    callback();
   });
 
   socket.on("disconnect", () => {
-    console.log("User has left");
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.game).emit("message", {
+        user: "admin",
+        text: `${user.name} has left in dismay`
+      });
+    }
   });
 });
 

@@ -28,6 +28,6 @@ const removeUser = id => {
 
 const getUser = id => users.find(user => user.id === id);
 
-const getUsersIngame = game => users.filter(user => user.game === game);
+const getUsersInGame = game => users.filter(user => user.game === game);
 
-module.exports = { addUser, removeUser, getUser, getUsersIngame };
+module.exports = { addUser, removeUser, getUser, getUsersInGame };
